@@ -1,0 +1,303 @@
+#VRML_SIM R2022a utf8
+WorldInfo {
+  basicTimeStep 9.5
+}
+Viewpoint {
+  orientation 0.715006916198562 -0.005401946212810055 -0.6990965089065574 3.152159409045614
+  position -2.1467218222755946 -1.5155764526889044 24.585493369166215
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+  castShadows FALSE
+}
+Floor {
+  size 20 20
+  appearance Plaster {
+  }
+}
+Wall {
+  translation 7 0 0
+  size 0.2 7 1
+}
+Wall {
+  translation 4 0 0
+  name "wall(5)"
+  size 0.2 4 1
+}
+Wall {
+  translation 1.39 -0.15 0
+  name "wall(8)"
+  size 0.2 4.5 1
+}
+Wall {
+  translation -2 -1.02 0
+  name "wall(10)"
+  size 0.2 5 1
+}
+Wall {
+  translation -7 0 0
+  name "wall(1)"
+  size 0.2 7 1
+}
+Wall {
+  translation 0 -3.5 0
+  name "wall(2)"
+  size 14 0.2 1
+}
+Wall {
+  translation 0 3.5 0
+  name "wall(3)"
+  size 14 0.2 1
+}
+Wall {
+  translation 5.5 2 0
+  name "wall(4)"
+  size 3 0.2 1
+}
+Wall {
+  translation 6 0.5 0
+  name "wall(6)"
+  size 2 0.2 1
+}
+Wall {
+  translation -1 1.46 0
+  name "wall(15)"
+  size 2 0.2 1
+}
+Wall {
+  translation 3.3 0.39 0
+  name "wall(16)"
+  size 1.5 0.2 1
+}
+Wall {
+  translation 2.1 -1 0
+  name "wall(17)"
+  size 1.5 0.2 1
+}
+Wall {
+  translation 2.05 2 0
+  name "wall(9)"
+  size 1.5 0.2 1
+}
+Wall {
+  translation -5.8 1 0
+  name "wall(12)"
+  size 2.5 0.2 1
+}
+Wall {
+  translation -4.62 -0.31 0
+  name "wall(13)"
+  size 2.5 0.2 1
+}
+Wall {
+  translation -6.45 -1.61 0
+  name "wall(23)"
+  size 1 0.2 1
+}
+Wall {
+  translation -2.86 2.49 0
+  name "wall(24)"
+  size 3 0.2 1
+}
+Wall {
+  translation 5.5 -1.5 0
+  name "wall(7)"
+  size 0.2 2 1
+}
+Wall {
+  translation 2.7 -2.8 0
+  name "wall(21)"
+  size 0.2 1.5 1
+}
+Wall {
+  translation 0 2.94 0
+  name "wall(22)"
+  size 0.2 1 1
+}
+Wall {
+  translation -4.8 -2.5 0
+  name "wall(19)"
+  size 0.2 2 1
+}
+Wall {
+  translation -3.35 -1.37 0
+  name "wall(11)"
+  size 0.2 2 1
+}
+Wall {
+  translation -0.3 -1.02 0
+  name "wall(18)"
+  size 0.2 3 1
+}
+Wall {
+  translation -3.38 1.8 0
+  name "wall(14)"
+  size 0.2 1.4 1
+}
+Wall {
+  translation -5.4 2.7 0
+  name "wall(20)"
+  size 0.2 1.4 1
+}
+RectangularPanel {
+  translation -5.31 -1.04 -0.014
+  rotation 0 -1 0 1.5707963267948968
+  signImage [
+    "/home/opt4smart/choirbot_ws/src/choirbot_examples/worlds/aruco/ar0.jpg"
+  ]
+  size 0.05 0.05
+}
+RectangularPanel {
+  translation -6.35 -1.04 -0.014
+  rotation 0 -1 0 1.5707963267948968
+  name "rectangular panel(1)"
+  signImage [
+    "/home/opt4smart/choirbot_ws/src/choirbot_examples/worlds/aruco/ar1.jpg"
+  ]
+  size 0.05 0.05
+}
+RectangularPanel {
+  translation -6.35 0.27 -0.014
+  rotation 0 -1 0 1.5707963267948968
+  name "rectangular panel(2)"
+  signImage [
+    "/home/opt4smart/choirbot_ws/src/choirbot_examples/worlds/aruco/ar2.jpg"
+  ]
+  size 0.05 0.05
+}
+RectangularPanel {
+  translation -5.1 0.27 -0.014
+  rotation 0 -1 0 1.5707963267948968
+  name "rectangular panel(3)"
+  signImage [
+    "/home/opt4smart/choirbot_ws/src/choirbot_examples/worlds/aruco/ar3.jpg"
+  ]
+  size 0.05 0.05
+}
+RectangularPanel {
+  translation -3.83 0.27 -0.014
+  rotation 0 -1 0 1.5707963267948968
+  name "rectangular panel(4)"
+  signImage [
+    "/home/opt4smart/choirbot_ws/src/choirbot_examples/worlds/aruco/ar4.jpg"
+  ]
+  size 0.05 0.05
+}
+RectangularPanel {
+  translation -2.65 0.27 -0.014
+  rotation 0 -1 0 1.5707963267948968
+  name "rectangular panel(16)"
+  signImage [
+    "/home/opt4smart/choirbot_ws/src/choirbot_examples/worlds/aruco/ar5.jpg"
+  ]
+  size 0.05 0.05
+}
+RectangularPanel {
+  translation -2.65 1.97 -0.014
+  rotation 0 -1 0 1.5707963267948968
+  name "rectangular panel(17)"
+  signImage [
+    "/home/opt4smart/choirbot_ws/src/choirbot_examples/worlds/aruco/ar6.jpg"
+  ]
+  size 0.05 0.05
+}
+RectangularPanel {
+  translation -3.83 1.83 -0.014
+  rotation 0 -1 0 1.5707963267948968
+  name "rectangular panel(14)"
+  signImage [
+    "/home/opt4smart/choirbot_ws/src/choirbot_examples/worlds/aruco/ar7.jpg"
+  ]
+  size 0.05 0.05
+}
+RectangularPanel {
+  translation -4.86 1.83 -0.014
+  rotation 0 -1 0 1.5707963267948968
+  name "rectangular panel(15)"
+  signImage [
+    "/home/opt4smart/choirbot_ws/src/choirbot_examples/worlds/aruco/ar8.jpg"
+  ]
+  size 0.05 0.05
+}
+RectangularPanel {
+  translation 0.62 -2.99 -0.014
+  rotation 0 -1 0 1.5707963267948968
+  name "rectangular panel(5)"
+  signImage [
+    "/home/opt4smart/choirbot_ws/src/choirbot_examples/worlds/aruco/ar9.jpg"
+  ]
+  size 0.05 0.05
+}
+RectangularPanel {
+  translation 0.62 0.88 -0.014
+  rotation 0 -1 0 1.5707963267948968
+  name "rectangular panel(6)"
+  signImage [
+    "/home/opt4smart/choirbot_ws/src/choirbot_examples/worlds/aruco/ar10.jpg"
+  ]
+  size 0.05 0.05
+}
+RectangularPanel {
+  translation 0.62 1.97 -0.014
+  rotation 0 -1 0 1.5707963267948968
+  name "rectangular panel(7)"
+  signImage [
+    "/home/opt4smart/choirbot_ws/src/choirbot_examples/worlds/aruco/ar11.jpg"
+  ]
+  size 0.05 0.05
+}
+RectangularPanel {
+  translation -0.53 1.97 -0.014
+  rotation 0 -1 0 1.5707963267948968
+  name "rectangular panel(8)"
+  signImage [
+    "/home/opt4smart/choirbot_ws/src/choirbot_examples/worlds/aruco/ar12.jpg"
+  ]
+  size 0.05 0.05
+}
+RectangularPanel {
+  translation 4.66 -0.03 -0.014
+  rotation 0 -1 0 1.5707963267948968
+  name "rectangular panel(9)"
+  signImage [
+    "/home/opt4smart/choirbot_ws/src/choirbot_examples/worlds/aruco/ar13.jpg"
+  ]
+  size 0.05 0.05
+}
+RectangularPanel {
+  translation 4.66 -2.74 -0.014
+  rotation 0 -1 0 1.5707963267948968
+  name "rectangular panel(10)"
+  signImage [
+    "/home/opt4smart/choirbot_ws/src/choirbot_examples/worlds/aruco/ar14.jpg"
+  ]
+  size 0.05 0.05
+}
+RectangularPanel {
+  translation 3.41 -2.74 -0.014
+  rotation 0 -1 0 1.5707963267948968
+  name "rectangular panel(11)"
+  signImage [
+    "/home/opt4smart/choirbot_ws/src/choirbot_examples/worlds/aruco/ar15.jpg"
+  ]
+  size 0.05 0.05
+}
+RectangularPanel {
+  translation 3.41 -1.56 -0.014
+  rotation 0 -1 0 1.5707963267948968
+  name "rectangular panel(12)"
+  signImage [
+    "/home/opt4smart/choirbot_ws/src/choirbot_examples/worlds/aruco/ar16.jpg"
+  ]
+  size 0.05 0.05
+}
+RectangularPanel {
+  translation 3.41 2.77 -0.014
+  rotation 0 -1 0 1.5707963267948968
+  name "rectangular panel(13)"
+  signImage [
+    "/home/opt4smart/choirbot_ws/src/choirbot_examples/worlds/aruco/ar17.jpg"
+  ]
+  size 0.05 0.05
+}

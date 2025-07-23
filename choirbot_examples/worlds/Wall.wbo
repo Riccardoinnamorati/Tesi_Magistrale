@@ -1,0 +1,7 @@
+#VRML_OBJ R2022a utf8
+Wall {
+  translation 4.99508 -0.72229 0
+  rotation 0 0 1 0.523603
+  name "wall(26)"
+  size 0.5 0.5 1
+}
