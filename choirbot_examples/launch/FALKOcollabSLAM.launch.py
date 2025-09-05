@@ -97,7 +97,10 @@ def generate_launch_description():
         targets.append([[4.0, -0.4, 0.0], [0.81, 0.0,0.0], [-1.56, 1.33, 0.0], [-2.6, -0.7, 0.0]])
         targets.append([[3.81, -2.90,0.0], [1.5, 0.0,0.0], [4.0, -0.4, 0.0]])
         targets.append([[-1.0, 1.33, 0.0], [-1.0, 2.80, 0.0], [1.0, 2.8, 0.0], [4.8, 2.4, 0.0], [5.2, 1.4, 0.0]])
-        targets.append([[-2.9, -2.9, 0.0], [0.0, -2.9, 0.0], [6.7, -2.8, 0.0]])
+        targets.append([[-2.9, -2.9, 0.0], [0.0, -2.9, 0.0], 
+                        #[6.7, -2.8, 0.0]
+                        [4.0, -2.5, 0.0]
+                        ])
 
     else:
         P = [
@@ -158,14 +161,14 @@ def generate_launch_description():
     Adj = binomial_random_graph(N, p=0.2, seed=seed)
     
     # Rviz2 node
-    launch_description.append(Node(
-        package='rviz2',
-        executable='rviz2',
-        name='rviz2',
-        output='screen',
-        parameters=[{'use_sim_time': True}],
-        arguments=['-d', world_package_dir + '/config.rviz'],
-    ))
+    # launch_description.append(Node(
+    #     package='rviz2',
+    #     executable='rviz2',
+    #     name='rviz2',
+    #     output='screen',
+    #     parameters=[{'use_sim_time': True}],
+    #     arguments=['-d', world_package_dir + '/config.rviz'],
+    # ))
 
         # FALKO Plotter Node
     # launch_description.append(Node(
