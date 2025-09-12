@@ -61,7 +61,7 @@ def generate_webots_world_file(robots, source_filename, target_filename):
 
 def generate_launch_description():
 
-    N_tb = 1
+    N_tb = 2
     seed = 3
 
     # Get arguments from command line
@@ -171,16 +171,16 @@ def generate_launch_description():
     # ))
 
         # FALKO Plotter Node
-    # launch_description.append(Node(
-    #     package='choirbot_examples',
-    #     executable='choirbot_FALKO_plotter',
-    #     output='screen',
-    #     prefix='xterm -title "FALKO_plotter" -geometry 160x10+2460+0 -hold -e ',
-    #     parameters=[{
-    #         'N': N,
-    #         'freq': 10.0,
-    #         'initial_positions': initial_positions_flat,
-    #     }]))
+    launch_description.append(Node(
+        package='choirbot_examples',
+        executable='choirbot_FALKO_plotter',
+        output='screen',
+        prefix='xterm -title "FALKO_plotter" -geometry 160x10+2460+0 -hold -e ',
+        parameters=[{
+            # 'N': N,
+            # 'freq': 10.0,
+            # 'initial_positions': initial_positions_flat,
+        }]))
 
     # add executables for each robot
     for i in range(N):
