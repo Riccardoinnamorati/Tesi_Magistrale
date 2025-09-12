@@ -15,7 +15,7 @@ class Plotter(Node):
         self.pose = {}
         self.keypoint_subs = []
         self.robot_keypoints = {i: None for i in range(self.N)}  # Store latest keypoints for each robot
-        self.robot_positions = {i: [0, 0, 0] for i in range(self.N)}  # Store latest positions for each robot
+        self.robot_positions = {}  # Store latest positions for each robot
 
         self.plot_timer = self.create_timer(0.3, self.listener_callback)  # Timer to trigger plot updates
 
@@ -39,30 +39,34 @@ class Plotter(Node):
         self.script_dir = os.path.dirname(os.path.realpath(__file__))
 
     def robot_pose_callback(self, msg, agent_id):
-        self.robot_positions[agent_id] = msg.data
+
+        msg.data.pop(0)
+
+        if agent_id not in self.robot_positions:
+            self.robot_positions[agent_id] = []
+
+        self.robot_positions[agent_id].append(msg.data)
+
+        self.get_logger().info(f"self.robot_positions[{agent_id}]: {self.robot_positions[agent_id]}")
 
     def plot_callback(self, msg):
         id = int(msg.data[0])
         msg.data.pop(0)
 
         self.pose[id] = msg.data
-            
+        
+
     def listener_callback(self):
         #plt.margins(x=10, y=10)
         plt.title(f"Full Plot")
         plt.xlabel('X')
         plt.ylabel('Y')
         plt.grid(True)
-        plt.legend()
+        
         plt.axis('equal')  # Ensure equal scaling for both axes
         img_path = os.path.join(self.script_dir, "bg.png")
         img = plt.imread(img_path)
         plt.imshow(img, extent=[-7.2,7.2,-3.53,3.53], aspect='auto')
-
-        # id = int(msg.data[0])
-        # msg.data.pop(0)
-
-        # self.pose[id] = msg.data
 
         for id in self.pose.keys():
             x_vals = []
@@ -113,11 +117,15 @@ class Plotter(Node):
                 plt.arrow(x, y, dx, dy, head_width=0.2, head_length=0.1, fc='red', ec='red')
             
             plt.plot(x_vals, y_vals, 'o-', label="Trajectory", markersize=5)
+        for id in range(self.N):
+            if id in self.robot_positions:
+                trajectory = self.robot_positions[id]
+                if len(trajectory) > 0:
+                    x_vals = [pose[0] for pose in trajectory]
+                    y_vals = [pose[1] for pose in trajectory]
+                    plt.plot(x_vals, y_vals, 's-', markersize=3, label=f'Traiettoria agente {id}')
 
-        for id in self.robot_positions.keys():
-            pos = self.robot_positions[id]
-            plt.plot(pos[0], pos[1], 's', markersize=2)
-
+        #plt.legend()
         plt.pause(0.001)
         plt.clf()
     
@@ -148,7 +156,8 @@ class Plotter(Node):
             # Plot keypoints as small dots
             self.ax_traj.scatter(kp_x_global, kp_y_global, 
                                 s=15, marker='.', alpha=0.6, 
-                                label=f'Robot {robot_id} keypoints' if robot_id == 0 else "")
+                                #label=f'Robot {robot_id} keypoints' if robot_id == 0 else ""
+                                )
                 
 
 def main(args=None):

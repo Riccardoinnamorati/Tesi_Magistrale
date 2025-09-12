@@ -205,7 +205,7 @@ class FALKOCollabSLAMGuidance(Guidance):
         _, _, self.theta = R.from_quat(self.current_pose.orientation).as_euler('xyz')
 
         self.pose_pub.publish(Float64MultiArray(data=[self.agent_id, self.current_pose.position[0], self.current_pose.position[1], self.theta]))
-        
+        self.get_logger().info(f'Agent {self.agent_id} pose: {self.current_pose.position[0]}, {self.current_pose.position[1]}, {self.theta}')
         if self.noisy and (self.agent_id == 0 or self.agent_id == 1):
             self.current_pose.position[0] += 0.5
             # self.theta += 0.1
