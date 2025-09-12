@@ -61,7 +61,7 @@ def generate_webots_world_file(robots, source_filename, target_filename):
 
 def generate_launch_description():
 
-    N_tb = 4
+    N_tb = 1
     seed = 3
 
     # Get arguments from command line

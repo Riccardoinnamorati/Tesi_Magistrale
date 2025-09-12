@@ -5,3 +5,4 @@ uint32 agent_id                 # agent id
 Keypoint[] keypoints            # Keypoint list
 uint32 total_scan_points        # Total number of scan points
 uint32 vertex_index             # graph vertex index
+float64[] glarot        # GLAROT signature for this scan

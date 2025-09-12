@@ -15,21 +15,36 @@ class Plotter(Node):
         self.pose = {}
         self.keypoint_subs = []
         self.robot_keypoints = {i: None for i in range(self.N)}  # Store latest keypoints for each robot
+        self.robot_positions = {i: [0, 0, 0] for i in range(self.N)}  # Store latest positions for each robot
+
+        self.plot_timer = self.create_timer(0.1, self.listener_callback)  # Timer to trigger plot updates
 
         for agent in range(self.N):
             self.subscription = self.create_subscription(
                 Float64MultiArray,
                 f"/agent_{agent}/agent{agent}_plot",
-                self.listener_callback,
+                self.plot_callback,
                 10
             )     
             keypoint_sub = self.create_subscription(
                 KeypointArray, f'/agent_{agent}/keypoints',
                 partial(self.keypoint_callback, agent_id=agent), 10)
-            
+
+            robot_pos_sub = self.create_subscription(
+                Float64MultiArray, f'/agent_{agent}/pose',
+                partial(self.robot_pose_callback, agent_id=agent), 10)
+
         self.keypoint_subs.append(keypoint_sub)
+        
         self.script_dir = os.path.dirname(os.path.realpath(__file__))
 
+    def robot_pose_callback(self, msg, agent_id):
+        self.robot_positions[agent_id] = msg.data
+
+    def plot_callback(self, msg):
+        self.pose[int(msg.data[0])] = msg.data[1:]
+
+    
     def listener_callback(self, msg):
         #plt.margins(x=10, y=10)
         plt.title(f"Full Plot")
@@ -42,10 +57,10 @@ class Plotter(Node):
         img = plt.imread(img_path)
         plt.imshow(img, extent=[-7.2,7.2,-3.53,3.53], aspect='auto')
 
-        id = int(msg.data[0])
-        msg.data.pop(0)
+        # id = int(msg.data[0])
+        # msg.data.pop(0)
 
-        self.pose[id] = msg.data
+        # self.pose[id] = msg.data
 
         for id in self.pose.keys():
             x_vals = []
@@ -96,6 +111,10 @@ class Plotter(Node):
                 plt.arrow(x, y, dx, dy, head_width=0.2, head_length=0.1, fc='red', ec='red')
             
             plt.plot(x_vals, y_vals, 'o-', label="Trajectory", markersize=5)
+
+        for id in self.robot_positions.keys():
+            pos = self.robot_positions[id]
+            plt.plot(pos[0], pos[1], 's', markersize=2)
 
         plt.pause(0.001)
         plt.clf()

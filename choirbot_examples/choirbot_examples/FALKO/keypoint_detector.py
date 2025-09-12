@@ -179,7 +179,9 @@ class KeypointDetector(Node):
         keypoints.agent_position.x = float(self.current_position[0])
         keypoints.agent_position.y = float(self.current_position[1])
         keypoints.agent_position.theta = float(self.current_orientation)
-        
+
+        keypoints.glarot = self.compute_GLAROT_signature(keypoints)
+
         self.get_logger().info(f'Found {len(keypoints.keypoints)} keypoints for agent {self.agent_id} at position ({self.current_position[0]:.2f}, {self.current_position[1]:.2f})')
         self.keypoint_pub.publish(keypoints)
 
@@ -251,6 +253,86 @@ class KeypointDetector(Node):
                 marker_array.markers.append(arrow)
     
         return marker_array
+    import numpy as np
+
+    def compute_GLAROT_signature(points, n_theta=8, n_rho=8, max_rho=None,
+                                sigma_theta=1.0, sigma_rho=1.0):
+        """
+        Calcola la signature GLAROT con smoothing gaussiano sui bin adiacenti.
+
+        Parameters:
+        - points: lista di tuple [(x1, y1), (x2, y2), ...]
+        - n_theta: numero di bin per l'angolo
+        - n_rho: numero di bin per la distanza
+        - max_rho: distanza massima considerata (se None viene calcolata dal dataset)
+        - sigma_theta: deviazione standard gaussiana per l'asse theta (in numero di bin)
+        - sigma_rho: deviazione standard gaussiana per l'asse rho (in numero di bin)
+        """
+        points = np.array(points)
+        num_points = len(points)
+        if num_points < 2:
+            return np.zeros((n_theta, n_rho))  # Non abbastanza punti per calcolare la signature
+
+        # Calcola tutte le coppie (theta, rho)
+        thetas = []
+        rhos = []
+        for i in range(num_points):
+            for j in range(i + 1, num_points):
+                dx = points[i, 0] - points[j, 0]
+                dy = points[i, 1] - points[j, 1]
+                theta = np.arctan2(dy, dx)  # [-pi, pi]
+                rho = np.sqrt(dx ** 2 + dy ** 2)
+                thetas.append(theta)
+                rhos.append(rho)
+
+        thetas = np.array(thetas)
+        rhos = np.array(rhos)
+
+        # Imposta max_rho
+        if max_rho is None:
+            max_rho = rhos.max()
+
+        # Normalizza angoli in [0, 2pi)
+        thetas = (thetas + 2 * np.pi) % (2 * np.pi)
+
+        # Dimensione dei bin
+        delta_theta = 2 * np.pi / n_theta
+        delta_rho = max_rho / n_rho
+
+        # Accumulatore
+        G = np.zeros((n_theta, n_rho))
+
+        # Popola l'accumulatore con smoothing gaussiano
+        for t, r in zip(thetas, rhos):
+            t_bin = int(t // delta_theta)
+            r_bin = int(r // delta_rho)
+            if r_bin >= n_rho:
+                r_bin = n_rho - 1
+
+            # Applica incremento gaussiano ai bin vicini
+            for dt in range(-1, 2):  # bin adiacenti in theta
+                for dr in range(-1, 2):  # bin adiacenti in rho
+                    tt = (t_bin + dt) % n_theta
+                    rr = r_bin + dr
+                    if 0 <= rr < n_rho:
+                        d_theta = dt
+                        d_rho = dr
+                        weight = np.exp(-0.5 * ((d_theta / sigma_theta) ** 2 +
+                                                (d_rho / sigma_rho) ** 2))
+                        G[tt, rr] += weight
+        return G
+
+
+    def glarot_distance(G1, G2):
+        """Calcola la distanza SL1 tra due signature GLAROT con shift circolare."""
+        n_theta = G1.shape[0]
+        min_dist = np.inf
+        for k in range(n_theta):
+            G1_shifted = np.roll(G1, shift=k, axis=0)
+            dist = np.sum(np.abs(G1_shifted - G2))
+            min_dist = min(min_dist, dist)
+        return min_dist
+
 
     def update_plots(self, keypoints_msg, scores):
         """Aggiorna i plot con i dati correnti"""

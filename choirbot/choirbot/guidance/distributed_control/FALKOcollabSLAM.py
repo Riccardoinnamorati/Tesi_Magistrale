@@ -51,6 +51,8 @@ class FALKOCollabSLAMGuidance(Guidance):
         self.laser_sub = self.create_subscription(
             LaserScan, f'/agent_{self.agent_id}/agent_{self.agent_id}/LDS_01', self.laser_callback, 10)
         
+        
+
         for i in self.in_neighbors:
             self.match_sub = self.create_subscription(
                 KeypointMatch, 
@@ -92,6 +94,8 @@ class FALKOCollabSLAMGuidance(Guidance):
         # Publisher for keypoints
         self.keypoint_pub = self.create_publisher(
             KeypointArray, f'/agent_{self.agent_id}/keypoints', 10)
+        
+        self.pose_pub = self.create_publisher(Float64MultiArray, f'/agent_{self.agent_id}/pose', 10)
 
     def compute_measurements(self, this_location, that_location):
 
@@ -111,7 +115,7 @@ class FALKOCollabSLAMGuidance(Guidance):
 
         return [dx, dy, dtheta, covariance]
 
-
+    
     def falko_match_callback(self, msg):
         """
         Callback function for FALKO keypoint matches.
@@ -200,6 +204,8 @@ class FALKOCollabSLAMGuidance(Guidance):
 
         _, _, self.theta = R.from_quat(self.current_pose.orientation).as_euler('xyz')
 
+        self.pose_pub.publish(Float64MultiArray(data=[self.agent_id, self.current_pose.position.x, self.current_pose.position.y, self.theta]))
+        
         if self.noisy and (self.agent_id == 0 or self.agent_id == 1):
             self.current_pose.position[0] += 0.5
             # self.theta += 0.1
