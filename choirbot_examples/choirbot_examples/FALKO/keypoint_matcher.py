@@ -72,9 +72,9 @@ class KeypointMatcher(Node):
             for data in data:
                 if neigh_id == self.agent_id or my_keypoints is None or data is None:
                     continue
-                glarot_dist = self.glarot_distance(my_keypoints.glarot, data.glarot)
-                if glarot_dist > 20:
-                    continue
+                #glarot_dist = self.glarot_distance(my_keypoints.glarot, data.glarot)
+                # if glarot_dist > 20:
+                #     continue
                 matcher = MixedMatcher(dist_tol = 0.01)
                 matches = []
                 _, H = matcher.match(my_keypoints.keypoints, data.keypoints, matches)
@@ -105,7 +105,7 @@ class KeypointMatcher(Node):
             
     import numpy as np
 
-    def glarot_distance(G1, G2):
+    def glarot_distance(self, g1, g2):
         """
         Calcola la distanza SL1 tra due signature GLAROT.
         
@@ -115,7 +115,16 @@ class KeypointMatcher(Node):
         Returns:
         - distanza minima SL1
         """
-        n_theta = G1.shape[0]
+
+        
+        G1 = np.array(g1)
+        G2 = np.array(g2)
+        self.get_logger().info(f"G1: {G1}")
+        n_theta, n_rho = int(G1[0]), int(G1[1])
+
+        self.get_logger().info(f"n_theta: {n_theta} n_rho: {n_rho}, G1: {G1}")
+        G1 = np.array(G1[2:]).reshape((n_theta, n_rho))
+        G2 = np.array(G2[2:]).reshape((n_theta, n_rho))
         min_dist = np.inf
         
         # Prova tutti gli shift circolari sull'asse theta

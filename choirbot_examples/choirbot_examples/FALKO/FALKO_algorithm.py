@@ -156,8 +156,80 @@ class FALKOKeypointDetector:
             keypoint_array.header.frame_id = scan_data.header.frame_id
             keypoint_array.keypoints.append(kp)
         
+
+        if keypoint_array.keypoints:
+            points = [(kp.position.x, kp.position.y) for kp in keypoint_array.keypoints]
+            glarot_signature, n_theta, n_rho = self.compute_GLAROT_signature(points)
+            keypoint_array.glarot = [float(n_theta), float(n_rho)] + glarot_signature.flatten().tolist()
         return keypoint_array, scores
     
+    def compute_GLAROT_signature(self, points, n_theta=8, n_rho=8, max_rho=None,
+                                sigma_theta=1.0, sigma_rho=1.0):
+        """
+        Calcola la signature GLAROT con smoothing gaussiano sui bin adiacenti.
+
+        Parameters:
+        - points: lista di tuple [(x1, y1), (x2, y2), ...]
+        - n_theta: numero di bin per l'angolo
+        - n_rho: numero di bin per la distanza
+        - max_rho: distanza massima considerata (se None viene calcolata dal dataset)
+        - sigma_theta: deviazione standard gaussiana per l'asse theta (in numero di bin)
+        - sigma_rho: deviazione standard gaussiana per l'asse rho (in numero di bin)
+        """
+        points = np.array(points)
+        num_points = len(points)
+        if num_points < 2:
+            return np.zeros((n_theta, n_rho)), n_theta, n_rho  # Non abbastanza punti per calcolare la signature
+
+        # Calcola tutte le coppie (theta, rho)
+        thetas = []
+        rhos = []
+        for i in range(num_points):
+            for j in range(i + 1, num_points):
+                dx = points[i, 0] - points[j, 0]
+                dy = points[i, 1] - points[j, 1]
+                theta = np.arctan2(dy, dx)  # [-pi, pi]
+                rho = np.sqrt(dx ** 2 + dy ** 2)
+                thetas.append(theta)
+                rhos.append(rho)
+
+        thetas = np.array(thetas)
+        rhos = np.array(rhos)
+
+        # Imposta max_rho
+        if max_rho is None:
+            max_rho = rhos.max()
+
+        # Normalizza angoli in [0, 2pi)
+        thetas = (thetas + 2 * np.pi) % (2 * np.pi)
+
+        # Dimensione dei bin
+        delta_theta = 2 * np.pi / n_theta
+        delta_rho = max_rho / n_rho
+
+        # Accumulatore
+        G = np.zeros((n_theta, n_rho))
+
+        # Popola l'accumulatore con smoothing gaussiano
+        for t, r in zip(thetas, rhos):
+            t_bin = int(t // delta_theta)
+            r_bin = int(r // delta_rho)
+            if r_bin >= n_rho:
+                r_bin = n_rho - 1
+
+            # Applica incremento gaussiano ai bin vicini
+            for dt in range(-1, 2):  # bin adiacenti in theta
+                for dr in range(-1, 2):  # bin adiacenti in rho
+                    tt = (t_bin + dt) % n_theta
+                    rr = r_bin + dr
+                    if 0 <= rr < n_rho:
+                        d_theta = dt
+                        d_rho = dr
+                        weight = np.exp(-0.5 * ((d_theta / sigma_theta) ** 2 +
+                                                (d_rho / sigma_rho) ** 2))
+                        G[tt, rr] += weight
+        return G, n_theta, n_rho
+
     # Sposta qui tutti i metodi helper dal nodo ROS
     def get_neigh_radius(self, rho):
         """Calculate neighborhood radius based on distance"""

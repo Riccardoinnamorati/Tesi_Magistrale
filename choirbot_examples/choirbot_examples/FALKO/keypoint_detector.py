@@ -255,7 +255,7 @@ class KeypointDetector(Node):
         return marker_array
     import numpy as np
 
-    def compute_GLAROT_signature(points, n_theta=8, n_rho=8, max_rho=None,
+    def compute_GLAROT_signature(self, points, n_theta=8, n_rho=8, max_rho=None,
                                 sigma_theta=1.0, sigma_rho=1.0):
         """
         Calcola la signature GLAROT con smoothing gaussiano sui bin adiacenti.

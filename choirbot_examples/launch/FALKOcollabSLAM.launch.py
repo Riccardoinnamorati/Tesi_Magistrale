@@ -61,7 +61,7 @@ def generate_webots_world_file(robots, source_filename, target_filename):
 
 def generate_launch_description():
 
-    N_tb = 2
+    N_tb = 4
     seed = 3
 
     # Get arguments from command line
@@ -187,6 +187,7 @@ def generate_launch_description():
         in_neighbors = np.nonzero(Adj[:, i])[0].tolist()
         in_neighbors = [i for i in range(N)]
         out_neighbors = np.nonzero(Adj[i, :])[0].tolist()
+        out_neighbors = [i for i in range(N)]
 
         initial_position = P[i]
         targets_list = np.array(targets[i]).flatten().tolist()
@@ -222,17 +223,17 @@ def generate_launch_description():
             
         # Keypoint Matcher Node  
 
-        # launch_description.append(Node(
-        #     package='choirbot_examples',
-        #     executable='choirbot_FALKO_keypoint_matcher',
-        #     output='screen',
-        #     prefix=f'xterm -title "keypoint_matcher_{i}" -geometry 160x7+2300+{int(135*i)} -hold -e ',
-        #     namespace=f'agent_{i}',
-        #     parameters=[{
-        #         'agent_id': i,
-        #         'in_neighbors': in_neighbors,  # Number of neighbors
-        #         'freq': freq_keypoint_matching,
-        #     }]))
+        launch_description.append(Node(
+            package='choirbot_examples',
+            executable='choirbot_FALKO_keypoint_matcher',
+            output='screen',
+            prefix=f'xterm -title "keypoint_matcher_{i}" -geometry 160x7+2300+{int(135*i)} -hold -e ',
+            namespace=f'agent_{i}',
+            parameters=[{
+                'agent_id': i,
+                'in_neighbors': in_neighbors,  # Number of neighbors
+                'freq': freq_keypoint_matching,
+            }]))
         
         launch_description.append(Node(
             package='choirbot_examples',

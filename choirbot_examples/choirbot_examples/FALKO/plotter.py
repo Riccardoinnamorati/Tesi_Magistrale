@@ -11,13 +11,13 @@ class Plotter(Node):
     def __init__(self):
         super().__init__(f"plotter_subscriber")
 
-        self.N = 2  # Number of agents
+        self.N = 4  # Number of agents
         self.pose = {}
         self.keypoint_subs = []
         self.robot_keypoints = {i: None for i in range(self.N)}  # Store latest keypoints for each robot
         self.robot_positions = {}  # Store latest positions for each robot
 
-        self.plot_timer = self.create_timer(0.3, self.listener_callback)  # Timer to trigger plot updates
+        self.plot_timer = self.create_timer(0.1, self.listener_callback)  # Timer to trigger plot updates
 
         for agent in range(self.N):
             self.subscription = self.create_subscription(
@@ -114,16 +114,16 @@ class Plotter(Node):
                 # Add arrows to show direction (pose orientation)
                 dx = np.cos(theta) * 0.1  # Arrow length for orientation
                 dy = np.sin(theta) * 0.1
-                plt.arrow(x, y, dx, dy, head_width=0.2, head_length=0.1, fc='red', ec='red')
+                plt.arrow(x, y, dx, dy, head_width=0.1, head_length=0.1, fc='red', ec='red')
             
             plt.plot(x_vals, y_vals, 'o-', label="Trajectory", markersize=5)
         for id in range(self.N):
             if id in self.robot_positions:
                 trajectory = self.robot_positions[id]
                 if len(trajectory) > 0:
-                    x_vals = [pose[0] for pose in trajectory]
-                    y_vals = [pose[1] for pose in trajectory]
-                    plt.plot(x_vals, y_vals, 's-', markersize=3, label=f'Traiettoria agente {id}')
+                    x_real = [pose[0] for pose in trajectory]
+                    y_real = [pose[1] for pose in trajectory]
+                    plt.plot(x_real, y_real, '--', markersize=3, label=f'Traiettoria agente {id}')
 
         #plt.legend()
         plt.pause(0.001)
