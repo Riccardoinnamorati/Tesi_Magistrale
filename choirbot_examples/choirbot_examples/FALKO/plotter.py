@@ -1,3 +1,4 @@
+import signal
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float64MultiArray
@@ -6,8 +7,11 @@ import matplotlib.pyplot as plt
 import os
 from choirbot_interfaces.msg import KeypointArray
 from functools import partial
+import imageio
+import datetime
 
 class Plotter(Node):
+
     def __init__(self):
         super().__init__(f"plotter_subscriber")
 
@@ -36,7 +40,17 @@ class Plotter(Node):
 
         self.keypoint_subs.append(keypoint_sub)
         
-        self.script_dir = os.path.dirname(os.path.realpath(__file__))
+        # Imposta la directory padre src come base per salvataggio video
+        self.script_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../'))
+        self.script_dir_img = os.path.dirname(os.path.realpath(__file__))
+        # Variabili per salvataggio frame e video
+        self.save_frames = True  # Attiva/disattiva salvataggio frame
+        run_id = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.frame_dir = os.path.join(self.script_dir, "frames_plot", f"run_{run_id}")
+        self.frame_idx = 0
+        self.frames_per_video = 300  # Cambia a piacere
+        if self.save_frames and not os.path.exists(self.frame_dir):
+            os.makedirs(self.frame_dir)
 
     def robot_pose_callback(self, msg, agent_id):
 
@@ -64,7 +78,7 @@ class Plotter(Node):
         plt.grid(True)
         
         plt.axis('equal')  # Ensure equal scaling for both axes
-        img_path = os.path.join(self.script_dir, "bg.png")
+        img_path = os.path.join(self.script_dir_img, "bg.png")
         img = plt.imread(img_path)
         plt.imshow(img, extent=[-7.2,7.2,-3.53,3.53], aspect='auto')
 
@@ -126,8 +140,47 @@ class Plotter(Node):
                     plt.plot(x_real, y_real, '--', markersize=3, label=f'Traiettoria agente {id}')
 
         #plt.legend()
+            # Salva il frame come immagine
+            if self.save_frames:
+                frame_path = os.path.join(self.frame_dir, f"frame_{self.frame_idx:05d}.png")
+                plt.savefig(frame_path)
+                self.frame_idx += 1
+                # Quando raggiungi il numero desiderato di frame, crea il video
+                if self.frame_idx % self.frames_per_video == 0:
+                    self.create_video_from_frames()
         plt.pause(0.001)
         plt.clf()
+
+    def create_video_from_frames(self, fps=10):
+        try:
+            # Trova l'ultima cartella creata in frames_plot
+            frames_root = os.path.join(self.script_dir, "frames_plot")
+            run_dirs = [d for d in os.listdir(frames_root) if os.path.isdir(os.path.join(frames_root, d))]
+            if not run_dirs:
+                self.get_logger().error("Nessuna cartella run trovata in frames_plot.")
+                return
+            last_run = sorted(run_dirs)[-1]
+            last_run_dir = os.path.join(frames_root, last_run)
+            video_dir = os.path.join(self.script_dir, "videos")
+            if not os.path.exists(video_dir):
+                os.makedirs(video_dir)
+            video_path = os.path.join(video_dir, f"plot_video_{last_run}.mp4")
+            images = []
+            file_list = sorted([f for f in os.listdir(last_run_dir) if f.endswith('.png')])
+            if not file_list:
+                self.get_logger().warn("Nessun frame trovato per creare il video.")
+                return
+            for filename in file_list:
+                img = imageio.imread(os.path.join(last_run_dir, filename))
+                images.append(img)
+            imageio.mimsave(video_path, images, fps=fps)
+            self.get_logger().info(f"✅ Video dei plot salvato in {video_path}")
+            # Cancella i frame dopo aver creato il video
+            for filename in file_list:
+                os.remove(os.path.join(last_run_dir, filename))
+            self.frame_idx = 0
+        except Exception as e:
+            self.get_logger().error(f"Errore nel salvataggio del video: {e}")
     
     def keypoint_callback(self, msg, agent_id):
         """Callback for keypoint messages"""
@@ -167,11 +220,22 @@ def main(args=None):
     plt.show()
     plt.figure(figsize=(6, 3))
 
+
+    def handle_signal(signum, frame):
+        agent.get_logger().info(f'Received signal {signum}, saving video and shutting down...')
+        agent.create_video_from_frames()
+        agent.destroy_node()
+        rclpy.shutdown()
+        exit(0)
+
+    signal.signal(signal.SIGINT, handle_signal)
+    signal.signal(signal.SIGTERM, handle_signal)
+
     try:
         rclpy.spin(agent)
     except KeyboardInterrupt:
         agent.get_logger().info('Shutting down...')
-    finally:
+        agent.create_video_from_frames()
         agent.destroy_node()
         rclpy.shutdown()
 
