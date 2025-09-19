@@ -58,7 +58,7 @@ Wall {
   translation 3.83 -1.1 0
   rotation 0 0 1 0.523603
   name "wall(18)"
-  size 0.3 0.3 1
+  size 0.5 0.5 1
 }
 Wall {
   translation 6.18082 -0.996095 0
@@ -67,10 +67,28 @@ Wall {
   size 0.3 0.3 1
 }
 Wall {
+  translation -1.45 -1.79 0
+  rotation 0 0 1 0.785
+  name "wall(40)"
+  size 0.3 0.3 1
+}
+Wall {
+  translation 2.68 -3.32 0
+  rotation 0 0 -1 0
+  name "wall(41)"
+  size 0.3 0.3 1
+}
+Wall {
+  translation 3.13 0.765 0 
+  rotation 0 0 -1 0
+  name "wall(42)"
+  size 0.3 0.3 1
+}
+Wall {
   translation 5.87456 2.31428 0
   rotation 0 0 1 0.523603
   name "wall(20)"
-  size 0.3 0.3 1
+  size 0.5 0.5 1
 }
 Wall {
   translation 0.537101 -1.70463 0
@@ -132,7 +150,7 @@ Wall {
 #}
 Wall {
   translation 2.2 -1.24 0
-  rotation 0 0 -1 -0.519
+  rotation 0 0 1 0.781
   name "wall(12)"
   size 0.3 1 1
 }

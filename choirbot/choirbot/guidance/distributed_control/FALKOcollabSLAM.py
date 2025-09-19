@@ -45,6 +45,7 @@ class FALKOCollabSLAMGuidance(Guidance):
 
         # Noisy measurement
         self.noisy = True
+        self.noise_magnitude =0
         self.theta = 0.0
 
         # Subscribe to laser scan topic
@@ -207,11 +208,21 @@ class FALKOCollabSLAMGuidance(Guidance):
         self.pose_pub.publish(Float64MultiArray(data=[self.agent_id, self.current_pose.position[0], self.current_pose.position[1], self.theta]))
         self.get_logger().info(f'Agent {self.agent_id} pose: {self.current_pose.position[0]}, {self.current_pose.position[1]}, {self.theta}')
         if self.noisy and (self.agent_id == 0 or self.agent_id == 1):
-            self.current_pose.position[0] += 0.5
+            #self.current_pose.position[0] += 0.5
             # self.theta += 0.1
+            right_noise = np.array([np.sin(self.theta), -np.cos(self.theta)])
+            self.noise_magnitude += 0.005
+            posizione_noise = np.array([self.current_pose.position[0],self.current_pose.position[1]]) + self.noise_magnitude
+            self.vertices.append([posizione_noise[0],posizione_noise[1], self.theta])
+        elif self.noisy and (self.agent_id==3):
+            #self.current_pose.position[1] -= 0.3
+            right_noise = np.array([np.sin(self.theta), -np.cos(self.theta)])
+            self.noise_magnitude += 0.005
+            posizione_noise = np.array([self.current_pose.position[0],self.current_pose.position[1]]) + self.noise_magnitude
+            self.vertices.append([posizione_noise[0],posizione_noise[1], self.theta])
+        else:
+            self.vertices.append([self.current_pose.position[0], self.current_pose.position[1], self.theta])
         
-        self.vertices.append([self.current_pose.position[0], self.current_pose.position[1], self.theta])
-
         if len(self.vertices) == 1:
             # Save first measurement (then used only for agent_0)
             self.prior = self.vertices[0]

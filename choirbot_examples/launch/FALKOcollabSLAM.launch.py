@@ -177,8 +177,8 @@ def generate_launch_description():
         output='screen',
         prefix='xterm -title "FALKO_plotter" -geometry 160x10+2460+0 -hold -e ',
         parameters=[{
-            # 'N': N,
-            # 'freq': 10.0,
+            'N': N,
+            'freq': odom_sampling_freq,
             # 'initial_positions': initial_positions_flat,
         }]))
 

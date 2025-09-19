@@ -9,19 +9,25 @@ from choirbot_interfaces.msg import KeypointArray
 from functools import partial
 import imageio
 import datetime
+import matplotlib.lines as mlines
 
 class Plotter(Node):
 
     def __init__(self):
         super().__init__(f"plotter_subscriber")
 
-        self.N = 4  # Number of agents
+        self.declare_parameter('N', 0)
+        self.declare_parameter('freq', 5)
+
+        self.N = self.get_parameter('N').value
+        self.freq = self.get_parameter('freq').value
+
         self.pose = {}
         self.keypoint_subs = []
         self.robot_keypoints = {i: None for i in range(self.N)}  # Store latest keypoints for each robot
         self.robot_positions = {}  # Store latest positions for each robot
 
-        self.plot_timer = self.create_timer(0.1, self.listener_callback)  # Timer to trigger plot updates
+        self.plot_timer = self.create_timer(1/self.freq, self.listener_callback)  # Timer to trigger plot updates
 
         for agent in range(self.N):
             self.subscription = self.create_subscription(
@@ -139,9 +145,14 @@ class Plotter(Node):
                     y_real = [pose[1] for pose in trajectory]
                     plt.plot(x_real, y_real, '--', markersize=3, label=f'Traiettoria agente {id}')
 
-        #plt.legend()
+        
             # Salva il frame come immagine
-            if self.save_frames:
+
+
+        real_traj = mlines.Line2D([],[], color='grey', linestyle='--', marker = None, label= 'Real Trajectory')
+        odom_traj = mlines.Line2D([],[], color='grey', linestyle='-', marker = 'o', label= 'Odometry')
+        plt.legend(handles = [real_traj, odom_traj])
+        if self.save_frames:
                 frame_path = os.path.join(self.frame_dir, f"frame_{self.frame_idx:05d}.png")
                 plt.savefig(frame_path)
                 self.frame_idx += 1
